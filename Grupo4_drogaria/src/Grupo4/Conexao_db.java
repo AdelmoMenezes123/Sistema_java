@@ -21,40 +21,7 @@ public class Conexao_db {
 				String password = "";
 				Class.forName("com.mysql.jdbc.Driver");
 				conexao = DriverManager.getConnection(url,user,password);
-				System.out.println("Conectado com sucesso");
-				
-				
-				
-//		------------------------------------------------------------
-				
-				ResultSet rs;
-				Statement stmt;
-				String sql;
-				int id;
-				
-				//buscando todos os produtos
-				stmt = conexao.createStatement();
-				
-				
-				sql = "SELECT * FROM produtos where id = 10";
-				rs = stmt.executeQuery(sql);
-				id=0;
-
-				while(rs.next()){
-					//pegando por nome de coluna
-					id  = rs.getInt("Id");	          
-					String nome = rs.getString("Quantidade");
-					String preco = rs.getString("Preco");
-
-					//exibindo valores
-					System.out.print("ID: " + id);
-					System.out.print(", Nome: " + nome);
-					System.out.print(", Preco: " + preco);
-					System.out.println();
-				}
-				
-//	--------------------------------------------------------------------------------
-				
+				System.out.println("Conectado com sucesso");				
 				
 			}
 		} catch (SQLException e) {
@@ -63,6 +30,7 @@ public class Conexao_db {
 		}
 		return conexao;
 	}
+	
 	
 	// Desconectando
 	static void desconectar() {
