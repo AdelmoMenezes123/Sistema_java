@@ -1,6 +1,10 @@
 package Grupo4;
+import View.Botoes;
+import View.Tela;
 
 import java.sql.SQLException;
+
+
 
 public class Principal_grupo04 {
 
@@ -12,8 +16,9 @@ public class Principal_grupo04 {
 		//Conexao_db.desconectar();
 		
 		
-		ImportaCSV.lerArquivoCSV(".\\Dados_DB\\MOCK_DATA.csv");
+		//ImportaCSV.lerArquivoCSV(".\\Dados_DB\\MOCK_DATA.csv");
 		
+		new Tela();
 		
 	}
 
