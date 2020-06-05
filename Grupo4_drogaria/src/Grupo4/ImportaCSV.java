@@ -6,10 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class ImportaCSV {
-	
+	public static String Produtos[] = null;
 	private ImportaCSV() {}
-
 	private static BufferedReader conteudoCsv = null;
+	
 	
 	public static void lerArquivoCSV(String csvArquivo) {
 		
@@ -20,15 +20,15 @@ public class ImportaCSV {
 				conteudoCsv = new BufferedReader(new FileReader(csvArquivo));
 				String linha ="";
 				while ((linha = conteudoCsv.readLine()) != null) {
-					String[] Produtos = linha.split(",");
+					 Produtos = linha.split(",");
 					
-					System.out.println("[id = " 	 + Produtos[0]+"]" 
-							+", [nome da marca = " + Produtos[1]+"]"
-							+", [nome generico = " + Produtos[2]+"]"
-							+", [laboratorio = "   + Produtos[3]+"]"
-							+", [quantidade = "    + Produtos[4]+"]"
-							+", [preco = "	     + Produtos[5]+"]"
-							);
+//					System.out.println("[id = "    + Produtos[0]+"]" 
+//							+", [nome da marca = " + Produtos[1]+"]"
+//							+", [nome generico = " + Produtos[2]+"]"
+//							+", [laboratorio = "   + Produtos[3]+"]"
+//							+", [quantidade = "    + Produtos[4]+"]"
+//							+", [preco = "	       + Produtos[5]+"]"
+//							);
 				}
 			}
 		} catch (FileNotFoundException e) {

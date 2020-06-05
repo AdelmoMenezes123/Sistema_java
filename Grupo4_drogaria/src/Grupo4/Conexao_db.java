@@ -2,6 +2,7 @@ package Grupo4;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,6 +10,10 @@ import java.sql.Statement;
 public class Conexao_db {
 
 	private static Connection conexao = null;
+	private final static String driver = "com.mysql.jdbc.Driver";
+	private final static String url = "jdbc:mysql://localhost:3306/a5_arquitetura?serverTimezone=UTC";
+	private final static String user ="root";
+	private final static String password = "";
 
 	private Conexao_db() {} 
 
@@ -16,13 +21,9 @@ public class Conexao_db {
 	public static Connection criarConexao() throws ClassNotFoundException, SQLException {
 		try {
 			if (conexao == null) {
-				String url = "jdbc:mysql://localhost:3306/a5_arquitetura?serverTimezone=UTC";
-				String user ="root";
-				String password = "";
-				Class.forName("com.mysql.jdbc.Driver");
-				conexao = DriverManager.getConnection(url,user,password);
-				System.out.println("Conectado com sucesso");				
 				
+				Class.forName(driver);
+				conexao =  DriverManager.getConnection(url,user,password);				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

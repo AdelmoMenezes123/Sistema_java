@@ -18,7 +18,10 @@ public class Principal_grupo04 {
 		
 		//ImportaCSV.lerArquivoCSV(".\\Dados_DB\\MOCK_DATA.csv");
 		
-		new Tela();
+
+		
+		
+		//new Tela();
 		
 	}
 
