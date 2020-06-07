@@ -1,7 +1,5 @@
-package Grupo4;
+package model.produ;
 
-
-import java.util.List;
 
 public class Produto { 
 	

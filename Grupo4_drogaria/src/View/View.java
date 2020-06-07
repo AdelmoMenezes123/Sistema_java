@@ -12,7 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import Grupo4.ImportaCSV;
-import Grupo4.Produto;
+import model.produ.CrudProdutos;
+import model.produ.Produto;
 import javax.swing.JLabel;
 
 public class View extends JFrame {
@@ -119,10 +120,13 @@ public class View extends JFrame {
 				try {
 
 					ImportaCSV.lerArquivoCSV(caminho);
-					// EnviarProdutos();
+					Produto p  = new Produto();
+					CrudProdutos crud = new CrudProdutos();
+					crud.crate(p);
+
+					
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					System.out.println("erro: "+e1);
 				}
 
 			}

@@ -1,4 +1,5 @@
-package Grupo4;
+package connectio;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,21 +7,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Conexao_db {
+public class ConnectionFactory {
 
-	private static Connection conexao = null;
-	private final static String driver = "com.mysql.jdbc.Driver"; // DRIVER
+	//private static Connection conexao = null;
 	private final static String url = "jdbc:mysql://localhost:3306/a5_arquitetura?serverTimezone=UTC"; // URL DO BANCO 
 	private final static String user ="root";// USUARIO 
 	private final static String password = "";//SENHA
 
-	private Conexao_db() {} // CONSTRUTOR
+	private ConnectionFactory() {} // CONSTRUTOR
 
 	//criando
 	public static Connection getConnection() throws Exception{
 		try {
 				
-				Class.forName(driver);// CLASSE QUE SOLICITA O DRIVE
+				Class.forName("com.mysql.cj.jdbc.Driver");// CLASSE QUE SOLICITA O DRIVE
 				return  DriverManager.getConnection(url,user,password);	//RETORNANDO A CONEXAO 			
 
 		} catch (ClassNotFoundException | SQLException e) {

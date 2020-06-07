@@ -1,12 +1,12 @@
 package Grupo4;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Scanner;
+
+import model.produ.Produto;
 
 public class ImportaCSV {
 
@@ -20,7 +20,7 @@ public class ImportaCSV {
 		try {
 			Produto p; // OBJETO DA CLASSE PRODUTO
 			
-			System.out.println(caminho.replace("\\", "\\" + "\\"));// CONFIRMANDO SE O VAL DA URL(DIRETORIO) ESTA CORRETO AO SER TRATADA
+			System.out.println("Caminho do Arquivo: "+caminho.replace("\\", "\\" + "\\"));// CONFIRMANDO SE O VAL DA URL(DIRETORIO) ESTA CORRETO AO SER TRATADA
 
 			 //reader = new BufferedReader(new InputStreamReader(new FileInputStream("caminho")));
 	       
