@@ -1,28 +1,11 @@
 package Grupo4;
-import View.Botoes;
-import View.Tela;
-
-import java.sql.SQLException;
-
-
+import View.View;
 
 public class Principal_grupo04 {
 
-	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
-		//Conexao_db.criarConexao();
+	public static void main(String[] args) throws Exception  {
 		
-		//new GraficoProdutos();
-		
-		//Conexao_db.desconectar();
-		
-		
-		//ImportaCSV.lerArquivoCSV(".\\Dados_DB\\MOCK_DATA.csv");
-		
-
-		
-		
-		//new Tela();
+		new View();
 		
 	}
-
 }
