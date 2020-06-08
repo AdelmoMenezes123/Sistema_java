@@ -10,11 +10,15 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 import Grupo4.ImportaCSV;
 import model.produ.CrudProdutos;
 import model.produ.Produto;
 import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.JPanel;
 
 public class View extends JFrame {
 	
@@ -29,6 +33,7 @@ public class View extends JFrame {
 	public static JButton btnExportar;
 	public static JButton btnAddGrafico;
 
+	public static DefaultTableModel table;
 	public static JFileChooser fc;
 	public static String caminho;
 	public static FileNameExtensionFilter filtro = new FileNameExtensionFilter(" *.csv", "csv");
@@ -45,9 +50,17 @@ public class View extends JFrame {
 	public static TextField caixaQuantidade;
 	public static TextField caixaPreco;
 	public static Label labelIdUpdate;
+	public static JTable table_1;
+	public static DefaultTableModel modeloTable;
 
-	public View() { // CONSTRUTOR DA CLASSE VIEW
+	public View() throws Exception {
+  			
+				
+		
+		
 		criarJanela();// CHAMANDO O METODO CRIAR JANELA
+		//criaTabela(); // CHAMA METODO CRIA TABELA
+		preencherJtableCidade();
 
 		// CHAMANDO METODOS DE CRIAR BOTOES
 		btnPesqArquivo();
@@ -74,7 +87,57 @@ public class View extends JFrame {
 
 	}
 
-	// -------------------------> criar janela
+	 public void preencherJtableCidade() throws Exception  {
+		 
+		 table_1 = new JTable();
+		 table_1.setBounds(10, 304, 674, 257); 
+		 getContentPane().add(table_1);
+
+		 
+		//Aqui verifico se a jTable tem algum registo se tiver eu deleto
+	       
+	        while (modeloTable.getRowCount() > 0) {
+	            modeloTable.removeRow(0);
+	        }
+	        
+		 
+	      //Aqui eu adiciono cada linha da lista na jTable
+		 for (Produto pro: CrudProdutos.listarProdutos()) {
+	     modeloTable = (DefaultTableModel) table_1.getModel();   
+	     table_1.setModel(new DefaultTableModel(
+	     	new Object[][] {
+	     		{pro.getId()}
+	     	},
+	     	new String[] {
+	     		"ID"
+	     	}
+	     ));
+		 }
+	        
+	 
+
+	       
+
+	        
+
+//	        for (Produto pro: CrudProdutos.listarProdutos()) {	        
+//	  
+//	        	modeloTable.setModel(new Object[][] {
+//    		 		{pro.getId(), pro.getNomeM(), pro.getPreco(), pro.getQtn()},
+//    		 	},
+//    		 	new String[] { "ID", "NOME MARCA", "QUANTIDADE", "PRECO" });
+//    		 }
+//	        
+	        
+	    }
+	
+	
+	
+	
+	
+	
+
+	// -------------------------> CRIA JANELA ----------------------------------
 	public void criarJanela() {
 		setTitle("Sistema Drogaria"); // O nome da janela
 		setSize(700, 600); // Largura e Tamanho da janela
@@ -83,7 +146,23 @@ public class View extends JFrame {
 		setLocationRelativeTo(null); // iniciar a janela centralizada
 		setVisible(true); // vizualiza a tela
 	}
+	
+	// -------------------------> CRIA TABELA
 
+	
+	//public void readJTale() {
+//			for(Produto p: CrudProdutos.listarProdutos()) {
+//				//criaTablela.addRow();
+//				model.addRow(new Object[] {
+//						p.getId(),
+//				});
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	//}
+	
 	// -------------------------------- botoes
 	// ---------------------------------------------------------------------------------------------
 
@@ -270,6 +349,4 @@ public class View extends JFrame {
 		getContentPane().add(caixaPreco);
 		caixaPreco.setColumns(10);
 	}
-//------------------------------------------------------------------------------------------------------------------------------
-
 }
