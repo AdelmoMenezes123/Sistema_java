@@ -5,23 +5,32 @@ import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import Grupo4.ImportaCSV;
 import model.produ.CrudProdutos;
 import model.produ.Produto;
+import model.produ.TableModelProd;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.event.ActionEvent;
+import javax.swing.SwingConstants;
 
 public class View extends JFrame {
-	
+
 	private static final long serialVersionUID = 1L;
 	public static JButton pesquisar_btn;
 	public static JButton importa_btn;
@@ -33,11 +42,10 @@ public class View extends JFrame {
 	public static JButton btnExportar;
 	public static JButton btnAddGrafico;
 
-	public static DefaultTableModel table;
 	public static JFileChooser fc;
 	public static String caminho;
 	public static FileNameExtensionFilter filtro = new FileNameExtensionFilter(" *.csv", "csv");
-	Produto p = new Produto();
+//	Produto p = new Produto();
 
 	public static TextField caixaArquivo;
 	public static TextField caixaPesquisar;
@@ -50,18 +58,13 @@ public class View extends JFrame {
 	public static TextField caixaQuantidade;
 	public static TextField caixaPreco;
 	public static Label labelIdUpdate;
-	public static JTable table_1;
-	public static DefaultTableModel modeloTable;
+	public static JTable table_1 = new JTable();
+	
 
 	public View() throws Exception {
-  			
-				
-		
-		
-		criarJanela();// CHAMANDO O METODO CRIAR JANELA
-		//criaTabela(); // CHAMA METODO CRIA TABELA
-		preencherJtableCidade();
 
+		criarJanela();// CHAMANDO O METODO CRIAR JANELA
+		//criaTabela();
 		// CHAMANDO METODOS DE CRIAR BOTOES
 		btnPesqArquivo();
 		btnImporta();
@@ -70,6 +73,7 @@ public class View extends JFrame {
 		btnPesquisar();
 		btnAtualizar();
 		btnExportar();
+		btnVizu();
 
 //		CHAMANDO METODOS DE CRIAR LABELS
 		labelArquivo();
@@ -87,55 +91,36 @@ public class View extends JFrame {
 
 	}
 
-	 public void preencherJtableCidade() throws Exception  {
-		 
-		 table_1 = new JTable();
-		 table_1.setBounds(10, 304, 674, 257); 
-		 getContentPane().add(table_1);
-
-		 
-		//Aqui verifico se a jTable tem algum registo se tiver eu deleto
-	       
-	        while (modeloTable.getRowCount() > 0) {
-	            modeloTable.removeRow(0);
-	        }
-	        
-		 
-	      //Aqui eu adiciono cada linha da lista na jTable
-		 for (Produto pro: CrudProdutos.listarProdutos()) {
-	     modeloTable = (DefaultTableModel) table_1.getModel();   
-	     table_1.setModel(new DefaultTableModel(
-	     	new Object[][] {
-	     		{pro.getId()}
-	     	},
-	     	new String[] {
-	     		"ID"
-	     	}
-	     ));
-		 }
-	        
-	 
-
-	       
-
-	        
-
-//	        for (Produto pro: CrudProdutos.listarProdutos()) {	        
-//	  
-//	        	modeloTable.setModel(new Object[][] {
-//    		 		{pro.getId(), pro.getNomeM(), pro.getPreco(), pro.getQtn()},
-//    		 	},
-//    		 	new String[] { "ID", "NOME MARCA", "QUANTIDADE", "PRECO" });
-//    		 }
-//	        
-	        
-	    }
+// ---------------------------------------->CRIA TABELA
+	public void criaTabela()  {
+		
+	table_1 = new JTable();
+		table_1.setModel(new DefaultTableModel(
+			new Object[][] {
+				{"ID", "NOME MARCA", "QUANTIDADE", "PRECO"},
+			},
+			new String[] {
+				"ID", "NOME MARCA", "QUANTIDADE", "PRECO"
+			}
+		) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			boolean[] columnEditables = new boolean[] {
+				true, true, true, true
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		table_1.getColumnModel().getColumn(1).setPreferredWidth(292);
+		table_1.getColumnModel().getColumn(2).setPreferredWidth(102);
+		table_1.getColumnModel().getColumn(3).setPreferredWidth(105);
+		table_1.setBounds(10, 336, 674, 116);
+		getContentPane().add(table_1);
 	
-	
-	
-	
-	
-	
+	}
 
 	// -------------------------> CRIA JANELA ----------------------------------
 	public void criarJanela() {
@@ -146,25 +131,40 @@ public class View extends JFrame {
 		setLocationRelativeTo(null); // iniciar a janela centralizada
 		setVisible(true); // vizualiza a tela
 	}
-	
-	// -------------------------> CRIA TABELA
-
-	
-	//public void readJTale() {
-//			for(Produto p: CrudProdutos.listarProdutos()) {
-//				//criaTablela.addRow();
-//				model.addRow(new Object[] {
-//						p.getId(),
-//				});
-//			}
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-	//}
-	
 	// -------------------------------- botoes
 	// ---------------------------------------------------------------------------------------------
+
+	public void addProTable(Produto pro) { // LER TABELA
+	        DefaultTableModel model = (DefaultTableModel) table_1.getModel();        
+	        model.addRow(new Object[] {pro.getId(), pro.getNomeM(), pro.getPreco(), pro.getQtn()});	      
+	        System.out.println(model.getDataVector());
+	}
+		
+
+	public void btnVizu() {
+		JButton btnVizualiza = new JButton("VER LISTA");
+		// DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+		btnVizualiza.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {		        
+				
+		        try {
+		        	criaTabela();
+					for (Produto pro : CrudProdutos.listarProdutos()) {
+						addProTable(pro);
+					}
+					
+					
+				} catch (Exception e) {
+					System.out.println("erro ao add :"+ e);
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		btnVizualiza.setBounds(10, 302, 674, 23);
+		getContentPane().add(btnVizualiza);
+	}
 
 	// ---------------------------> BOTAO DE PESQUISAR ARQUIVO
 	public void btnPesqArquivo() {
@@ -180,8 +180,11 @@ public class View extends JFrame {
 				fc.setDialogTitle("Procurar arquivo"); // TITULO DA CAIXA
 				fc.setBounds(493, 50, 400, 300);
 				File f = fc.getSelectedFile(); // ARQUIVO SELECIONADO
-				caixaArquivo.setText(f.getPath()); // PEGA O CAMINHO DO ARQUIVO E COLOCA NA CAIXAARQUIVO
-				caminho = f.getPath();// COLOCANDO O CAMINHO NA VARIAVEL QUE VAI PARA FUNCAO LER ARQUIVO
+				if (fc.getSelectedFile() != null) { // SE ARQUIVO SELECIONADO
+					caixaArquivo.setText(f.getPath()); // FACA O CAMINHO DO DIREITORIO APARECER NO TEXTFILD
+					caminho = f.getPath();// COLOCANDO O CAMINHO NA VARIAVEL QUE VAI PARA FUNCAO LER ARQUIVO
+				}
+
 			}
 		});
 		getContentPane().setLayout(null);// CONFIGURACAO DE LAYOUT MANUAL
@@ -198,14 +201,17 @@ public class View extends JFrame {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				try {
 
-					ImportaCSV.lerArquivoCSV(caminho);
-					Produto p  = new Produto();
-					CrudProdutos crud = new CrudProdutos();
-					crud.crate(p);
+					if (caminho != null) {
+						ImportaCSV.lerArquivoCSV(caminho);
+						Produto p = new Produto();
+						CrudProdutos crud = new CrudProdutos();
+						crud.crate(p);
+					} else {
+						JOptionPane.showMessageDialog(null, "Caminho vazio add um arquivo");
+					}
 
-					
 				} catch (Exception e1) {
-					System.out.println("erro: "+e1);
+					System.out.println("Eita deu Erro: " + e1);
 				}
 
 			}
@@ -241,7 +247,7 @@ public class View extends JFrame {
 //---------------------------------------> BOTAO DE ATUALIZAR PRODUTO
 	public void btnAtualizar() {
 		btnAtualizar = new JButton("ATUALIZAR");
-		btnAtualizar.setBounds(540, 257, 89, 23);
+		btnAtualizar.setBounds(540, 257, 103, 23);
 		getContentPane().add(btnAtualizar);
 	}
 
@@ -348,5 +354,6 @@ public class View extends JFrame {
 		caixaPreco.setBounds(434, 258, 86, 20);
 		getContentPane().add(caixaPreco);
 		caixaPreco.setColumns(10);
+
 	}
 }

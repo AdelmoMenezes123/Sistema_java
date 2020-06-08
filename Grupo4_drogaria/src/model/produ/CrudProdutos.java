@@ -18,24 +18,19 @@ import connectio.ConnectionFactory;
 
 public class CrudProdutos {
 
-//	System.out.println("--------------------------");
-//	for (Produto produto : ImportaCSV.produtos) {
-//		System.out.println("ID " + produto.getId());
-//		System.out.println("NOMEM: " + produto.getNomeM());
-//		System.out.println("NOMEG: " + produto.getNomeG());
-//		System.out.println("LAB: " + produto.getLab());
-//		System.out.println("QUANTI: " + produto.getQtn());
-//		System.out.println("PRECO: " + produto.getPreco());
-//		System.out.println("--------------------------");
-//
-//	}
-
-	public CrudProdutos(){}
+	private final static String INSERT = "INSERT INTO `remedios`(`Id`,`nomeMar`, `nomeGen`, `laboratorio`, `quantidade`, `preco`) VALUES (?,?,?,?,?,?)";
+	private final static String UPDATE = "UPDATE `remedios` SET `quantidade`=?, `preco`=? WHERE `Id`=?";
+//    private final static String DELETE = "DELETE FROM `remedios` WHERE ID =?";
+    private final static String LISTA = "SELECT * FROM `remedios` LIMIT 3";
+    //private final String LISTABYID = "SELECT * FROM `remedios` WHERE `Id`=?";
+	
+    public CrudProdutos(){}
+	
 	int linhaAfetada = 0;
 	static ResultSet rs = null;
 	// int id = 0;
 	// ResultSet generatedKeys = null;
-	static String sql = "";
+	//static String sql = "";
 
 	public void crate(Produto p) throws Exception {
 		Connection con = ConnectionFactory.getConnection();
@@ -46,8 +41,7 @@ public class CrudProdutos {
 
 				p = ImportaCSV.produtos.get(i); // CARREGANDO LISTA PARA NO OBJ PRODUTO
 				// inserindo novo produto
-				sql = "INSERT INTO `remedios`(`Id`,`nomeMar`, `nomeGen`, `laboratorio`, `quantidade`, `preco`) VALUES (?,?,?,?,?,?)";
-				stmt = con.prepareStatement(sql); // PREPARANDO INSERT
+				stmt = con.prepareStatement(INSERT); // PREPARANDO INSERT
 				stmt.setInt(1, p.getId()); // POSICAO E VALOR QUE SERA INSERIDA NO BANCO
 				stmt.setString(2, p.getNomeM());
 				stmt.setString(3, p.getNomeG());
@@ -86,9 +80,7 @@ public class CrudProdutos {
 		List<Produto> produtos = new ArrayList<>();
 
 		try {
-			sql = "SELECT * FROM `remedios` LIMIT 5";
-			stmt = con.prepareStatement(sql);
-
+			stmt = con.prepareStatement(LISTA);
 			rs = stmt.executeQuery();// CONSULTAR O BANCO, GUARDANDO NA VARIAVEL rs.
 
 			while (rs.next()) { // SE EXISTIR UM PROXIMO VALOR

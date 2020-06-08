@@ -11,6 +11,13 @@ public class Principal_grupo04 {
 		
 		new View();
 		
+//		for ( Produto p : CrudProdutos.listarProdutos()) {
+//			//Produto p  = new Produto();
+//			
+//		//	crud.crate(p);
+//			System.out.println(p.getId());
+//		}
+//		
 //		ImportaCSV.lerArquivoCSV(".\\Dados_DB\\MOCK_DATA.csv");
 //
 //		CrudProdutos crud = new CrudProdutos();
