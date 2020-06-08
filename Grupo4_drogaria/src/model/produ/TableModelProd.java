@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
+// NAO USEI ESSE MODELO
+
 public class TableModelProd extends AbstractTableModel {  
 /**
 	 * 

@@ -28,6 +28,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
+import javax.swing.JScrollBar;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
+import java.awt.Component;
 
 public class View extends JFrame {
 
@@ -53,18 +57,20 @@ public class View extends JFrame {
 
 	public static JLabel labelProdutos;
 	public static JLabel labelPreco;
-	public static JLabel labelId;
+	public static JLabel labelId ;
 	public static JLabel labelQuantidade;
 	public static TextField caixaQuantidade;
 	public static TextField caixaPreco;
 	public static Label labelIdUpdate;
-	public static JTable table_1 = new JTable();
+	public static JTable table_1 ;
+	private JScrollPane scrollPane;;
+	
 	
 
 	public View() throws Exception {
 
 		criarJanela();// CHAMANDO O METODO CRIAR JANELA
-		//criaTabela();
+		criaTabela();
 		// CHAMANDO METODOS DE CRIAR BOTOES
 		btnPesqArquivo();
 		btnImporta();
@@ -88,38 +94,45 @@ public class View extends JFrame {
 		caixaProduto();
 		caixaQuantidade();
 		caixaPreco();
-
+		
 	}
+	
 
 // ---------------------------------------->CRIA TABELA
 	public void criaTabela()  {
+		{ 
+			scrollPane = new JScrollPane(); // BARRA DE ROLAGEM
+			scrollPane.setBounds(0, 336, 694, 236);
+			getContentPane().add(scrollPane);
+			table_1 = new JTable(); // TABELA
+			scrollPane.setViewportView(table_1); // MOSTRA SCROL
+			table_1.setModel(new DefaultTableModel( // SETANDO O VALOR DAS COLUNAS 
+				new Object[][] { // COLUNAS QUE VAI INICIA UM NOVO PRODUTO
+				},
+				new String[] {
+					"ID", "NOME MARCA", "QUANTIDADE", "PRECO" // HEADER
+				}
+			) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+				boolean[] columnEditables = new boolean[] {
+					false, false, false, false
+				};
+				public boolean isCellEditable(int row, int column) {
+					return columnEditables[column];
+				}
+			});
+			table_1.getColumnModel().getColumn(0).setPreferredWidth(83);
+			table_1.getColumnModel().getColumn(0).setMaxWidth(1111111);
+			table_1.getColumnModel().getColumn(1).setPreferredWidth(299);
+			table_1.getColumnModel().getColumn(2).setPreferredWidth(120);
+			table_1.getColumnModel().getColumn(3).setPreferredWidth(97);
+		}
+	}
+	public void scrol() {
 		
-	table_1 = new JTable();
-		table_1.setModel(new DefaultTableModel(
-			new Object[][] {
-				{"ID", "NOME MARCA", "QUANTIDADE", "PRECO"},
-			},
-			new String[] {
-				"ID", "NOME MARCA", "QUANTIDADE", "PRECO"
-			}
-		) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			boolean[] columnEditables = new boolean[] {
-				true, true, true, true
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
-		table_1.getColumnModel().getColumn(1).setPreferredWidth(292);
-		table_1.getColumnModel().getColumn(2).setPreferredWidth(102);
-		table_1.getColumnModel().getColumn(3).setPreferredWidth(105);
-		table_1.setBounds(10, 336, 674, 116);
-		getContentPane().add(table_1);
-	
 	}
 
 	// -------------------------> CRIA JANELA ----------------------------------
@@ -135,25 +148,29 @@ public class View extends JFrame {
 	// ---------------------------------------------------------------------------------------------
 
 	public void addProTable(Produto pro) { // LER TABELA
-	        DefaultTableModel model = (DefaultTableModel) table_1.getModel();        
-	        model.addRow(new Object[] {pro.getId(), pro.getNomeM(), pro.getPreco(), pro.getQtn()});	      
-	        System.out.println(model.getDataVector());
+		 
+			DefaultTableModel model = (DefaultTableModel) table_1.getModel();   // CARREGANDO O MODELO... RECEBENDO UMA LISTA     
+	        model.addRow(new Object[] {pro.getId(), pro.getNomeM(), pro.getPreco(), pro.getQtn()});	  //SETANDO OS VALORES P/ CADA LINHA   
+	      //  System.out.println(model.getDataVector());
 	}
 		
 
 	public void btnVizu() {
 		JButton btnVizualiza = new JButton("VER LISTA");
+		btnVizualiza.setFont(new Font("Tahoma", Font.BOLD, 11));
 		// DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+		
 		btnVizualiza.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {		        
-				
 		        try {
-		        	criaTabela();
-					for (Produto pro : CrudProdutos.listarProdutos()) {
-						addProTable(pro);
+		        	
+		        	
+					for (Produto pro : CrudProdutos.listarProdutos()) { // CARREGANDO LISTA QUE DE PRODUTOS DO BANCO 
+						
+						addProTable(pro); //INSERINDO NA TABELA
 					}
-					
+					criaTabela(); //INICIANDO TABELA AO CLICAR NO BOTAO
 					
 				} catch (Exception e) {
 					System.out.println("erro ao add :"+ e);
@@ -162,7 +179,7 @@ public class View extends JFrame {
 				
 			}
 		});
-		btnVizualiza.setBounds(10, 302, 674, 23);
+		btnVizualiza.setBounds(10, 307, 661, 23);
 		getContentPane().add(btnVizualiza);
 	}
 
@@ -196,18 +213,18 @@ public class View extends JFrame {
 
 //------------------------------> BOTAO DE IMPORTAR
 	public void btnImporta() {
-		importa_btn = new JButton("IMPORTAR");
-		importa_btn.addActionListener(new ActionListener() {
+		importa_btn = new JButton("IMPORTAR"); 
+		importa_btn.addActionListener(new ActionListener() { // ACAO AO CLICAR NO BOTAO
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				try {
 
-					if (caminho != null) {
-						ImportaCSV.lerArquivoCSV(caminho);
-						Produto p = new Produto();
-						CrudProdutos crud = new CrudProdutos();
-						crud.crate(p);
+					if (caminho != null) { // SE O CAMINHO OBTIDO NO BOTAO DE PESQUISA FOR DIFERENTE DE NULL
+						ImportaCSV.lerArquivoCSV(caminho); // ENVIE O CAMINHO PARA O METODO QUE VAI LE O ARQUIVO
+						Produto p = new Produto() ;//OBJTS QUE VAI RECEBER A LISTA 
+						CrudProdutos crud = new CrudProdutos();// OBJ PARA CHAMAR O INSERT
+						crud.crate(p); // INSERT  
 					} else {
-						JOptionPane.showMessageDialog(null, "Caminho vazio add um arquivo");
+						JOptionPane.showMessageDialog(null, "Caminho vazio add um arquivo");// JANELA
 					}
 
 				} catch (Exception e1) {
@@ -217,7 +234,7 @@ public class View extends JFrame {
 			}
 		});
 
-		importa_btn.setBounds(74, 111, 96, 32);
+		importa_btn.setBounds(81, 111, 89, 32);
 		importa_btn.setVisible(true);
 		getContentPane().add(importa_btn);
 		getContentPane().setLayout(null);
@@ -232,28 +249,28 @@ public class View extends JFrame {
 
 //---------------------------------------------->BOTAO DE ADD GRAFICO
 	public void btnAddGrafico() {
-		btnAddGrafico = new JButton("ADD no grafico");
-		btnAddGrafico.setBounds(41, 257, 128, 23);
+		btnAddGrafico = new JButton("ADD NO GRAFICO");
+		btnAddGrafico.setBounds(104, 202, 148, 32);
 		getContentPane().add(btnAddGrafico);
 	}
 
 //-----------------------------------> BOTAO DE PESQUISAR ID
 	public void btnPesquisar() {
-		pesq_id = new JButton("Pesquisar");
-		pesq_id.setBounds(528, 180, 89, 23);
+		pesq_id = new JButton("PESQUISAR");
+		pesq_id.setBounds(528, 174, 89, 32);
 		getContentPane().add(pesq_id);
 	}
 
 //---------------------------------------> BOTAO DE ATUALIZAR PRODUTO
 	public void btnAtualizar() {
 		btnAtualizar = new JButton("ATUALIZAR");
-		btnAtualizar.setBounds(540, 257, 103, 23);
+		btnAtualizar.setBounds(533, 248, 103, 32);
 		getContentPane().add(btnAtualizar);
 	}
 
 //-------------------------------------------> BOTAO DE EXPORTAR ARQUIVO SCV
 	public void btnExportar() {
-		btnExportar = new JButton("Exporta");
+		btnExportar = new JButton("EXPORTAR");
 		btnExportar.setBounds(180, 111, 89, 32);
 		getContentPane().add(btnExportar);
 	}
@@ -264,7 +281,7 @@ public class View extends JFrame {
 //-------------------------------------------> LABEL ARQUIVO
 	public void labelArquivo() {
 		// -------> ARQIVO
-		arquivo_Label = new Label("Arquivo :");
+		arquivo_Label = new Label("Arquivo ");
 		arquivo_Label.setFont(new Font("Arial", Font.BOLD, 15));
 		arquivo_Label.setBounds(10, 50, 69, 25);
 		arquivo_Label.setVisible(true); // DEIXA VISIVEL O OBJETO
@@ -274,15 +291,16 @@ public class View extends JFrame {
 	// -------------------------------------------> LABEL PRODUTO
 	public void labelPesqProdutos() {
 		labelProdutos = new JLabel("Produto");
-		labelProdutos.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		labelProdutos.setBounds(54, 175, 77, 32);
+		labelProdutos.setHorizontalAlignment(SwingConstants.LEFT);
+		labelProdutos.setFont(new Font("Arial Black", Font.BOLD, 13));
+		labelProdutos.setBounds(24, 174, 76, 32);
 		getContentPane().add(labelProdutos);
 	}
 
 	// -------------------------------------------> LABEL QUANTIDADE
 	public void labelQuantidade() {
 		labelQuantidade = new JLabel("QUANTIDADE");
-		labelQuantidade.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		labelQuantidade.setFont(new Font("Arial", Font.BOLD, 13));
 		labelQuantidade.setBounds(331, 233, 86, 14);
 		getContentPane().add(labelQuantidade);
 	}
@@ -297,15 +315,17 @@ public class View extends JFrame {
 	// -------------------------------------------> LABEL ID
 	public void labelId() {
 		labelId = new JLabel("ID");
-		labelId.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		labelId.setBounds(459, 156, 46, 14);
+		labelId.setHorizontalAlignment(SwingConstants.LEFT);
+		labelId.setFont(new Font("Arial", Font.BOLD, 13));
+		labelId.setBounds(441, 154, 46, 14);
+		labelId.setVisible(true);
 		getContentPane().add(labelId);
 	}
 
 	// ---------------------------------------> LABEL PRECO
 	public void labelUpdate() {
 		labelIdUpdate = new Label("PRECO");
-		labelIdUpdate.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		labelIdUpdate.setFont(new Font("Arial", Font.BOLD, 13));
 		labelIdUpdate.setBounds(441, 233, 64, 14);
 		getContentPane().add(labelIdUpdate);
 	}
@@ -327,7 +347,7 @@ public class View extends JFrame {
 	// -----------------------------------> CAIXA DE PESQUISA ID
 	public void caixaPesquisar() {
 		caixaPesquisar = new TextField();
-		caixaPesquisar.setBounds(459, 181, 59, 23);
+		caixaPesquisar.setBounds(441, 174, 77, 30);
 		getContentPane().add(caixaPesquisar);
 		caixaPesquisar.setColumns(10);
 	}
@@ -335,7 +355,7 @@ public class View extends JFrame {
 	// -----------------------------------> CAIXA DE PRODUTOS
 	public void caixaProduto() {
 		caixaProduto = new TextField();
-		caixaProduto.setBounds(104, 180, 292, 23);
+		caixaProduto.setBounds(104, 174, 292, 29);
 		getContentPane().add(caixaProduto);
 		caixaProduto.setColumns(10);
 	}
@@ -343,7 +363,7 @@ public class View extends JFrame {
 	// -------------------------------------> CAIXA QUANTIDADE
 	public void caixaQuantidade() {
 		caixaQuantidade = new TextField();
-		caixaQuantidade.setBounds(331, 257, 86, 20);
+		caixaQuantidade.setBounds(331, 252, 86, 28);
 		getContentPane().add(caixaQuantidade);
 		caixaQuantidade.setColumns(10);
 	}
@@ -351,9 +371,10 @@ public class View extends JFrame {
 	/// -------------------------- CAIXA PRECO
 	public void caixaPreco() {
 		caixaPreco = new TextField();
-		caixaPreco.setBounds(434, 258, 86, 20);
+		caixaPreco.setBounds(441, 252, 86, 28);
 		getContentPane().add(caixaPreco);
 		caixaPreco.setColumns(10);
 
 	}
 }
+

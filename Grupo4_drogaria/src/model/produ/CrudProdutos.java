@@ -21,7 +21,7 @@ public class CrudProdutos {
 	private final static String INSERT = "INSERT INTO `remedios`(`Id`,`nomeMar`, `nomeGen`, `laboratorio`, `quantidade`, `preco`) VALUES (?,?,?,?,?,?)";
 	private final static String UPDATE = "UPDATE `remedios` SET `quantidade`=?, `preco`=? WHERE `Id`=?";
 //    private final static String DELETE = "DELETE FROM `remedios` WHERE ID =?";
-    private final static String LISTA = "SELECT * FROM `remedios` LIMIT 3";
+    private final static String LISTA = "SELECT * FROM `remedios` LIMIT 30";
     //private final String LISTABYID = "SELECT * FROM `remedios` WHERE `Id`=?";
 	
     public CrudProdutos(){}
