@@ -21,19 +21,21 @@ public class CrudProdutos {
 	private final static String INSERT = "INSERT INTO `remedios`(`Id`,`nomeMar`, `nomeGen`, `laboratorio`, `quantidade`, `preco`) VALUES (?,?,?,?,?,?)";
 	private final static String UPDATE = "UPDATE `remedios` SET `quantidade`=?, `preco`=? WHERE `Id`=?";
 //    private final static String DELETE = "DELETE FROM `remedios` WHERE ID =?";
-    private final static String LISTA = "SELECT * FROM `remedios` LIMIT 30";
-    //private final String LISTABYID = "SELECT * FROM `remedios` WHERE `Id`=?";
-	
-    public CrudProdutos(){}
-	
+	private final static String LISTA = "SELECT * FROM `remedios` ";
+	private final static String LISTAID = "SELECT * FROM `remedios` WHERE Id=?";
+	// private final String LISTABYID = "SELECT * FROM `remedios` WHERE `Id`=?";
+
+	public CrudProdutos() {
+	}
+
 	int linhaAfetada = 0;
-	static ResultSet rs = null;
 	// int id = 0;
 	// ResultSet generatedKeys = null;
-	//static String sql = "";
+	// static String sql = "";
 
 	public void crate(Produto p) throws Exception {
 		Connection con = ConnectionFactory.getConnection();
+
 		PreparedStatement stmt = null;
 		try {
 
@@ -52,12 +54,6 @@ public class CrudProdutos {
 				linhaAfetada = stmt.executeUpdate(); // RESPONSAVEL PELA DML... vai gerar o sql insert TBM VAI COLOCAR O
 														// NUMERO DE INSERT
 
-				// generatedKeys = stmt.getGeneratedKeys();// PEGANDO ID DOS PRODUTOS DO BANCO
-
-//				if (generatedKeys.next()) {    // SE TIVER PROXIMO ID 
-//	                id = generatedKeys.getInt(i); // COLOQUE ELES NA VARIAVEL ID 
-//	    			System.out.println("Produto inserido com id: " + id);  // PRINT NA TELA O VALOR DELE 
-//	            }
 			}
 
 			if (linhaAfetada == 0) { // SE A LINHA NAO FOR AFETADA PRINT NA TELA .
@@ -68,6 +64,7 @@ public class CrudProdutos {
 
 		} catch (Exception e) {
 			System.out.println("Erro ao salvar no Banco : " + e);
+			JOptionPane.showMessageDialog(null, "ERRO ao salvar no banco!!\n"+e.getMessage());
 		} finally {
 			ConnectionFactory.closeConnection(con, stmt);
 		}
@@ -77,8 +74,8 @@ public class CrudProdutos {
 	public static List<Produto> listarProdutos() throws Exception {
 		Connection con = ConnectionFactory.getConnection();
 		PreparedStatement stmt = null;
-		List<Produto> produtos = new ArrayList<>();
-
+		ResultSet rs = null;
+		List<Produto> produto = new ArrayList<>();
 		try {
 			stmt = con.prepareStatement(LISTA);
 			rs = stmt.executeQuery();// CONSULTAR O BANCO, GUARDANDO NA VARIAVEL rs.
@@ -88,9 +85,43 @@ public class CrudProdutos {
 				Produto p = new Produto(); // OBJ DO TIPO Produto
 				p.setId(rs.getInt("Id")); // ADD OS VALORES DO BANCO NO OBJ P. PARA DEPOIS ADD NA LISTA
 				p.setNomeM(rs.getString("nomeMar")); // setNomeM ? VEM DA CLASSE produto.
+				p.setNomeG(rs.getString("nomeGen"));
 				p.setQtn(rs.getInt("quantidade")); // rs ? ME DA ACESSO A CONSULTA NO BANCO
 				p.setPreco(rs.getDouble("preco")); // getDouble ? PEGANDO O VALOR DO BANCO E PASSANDO COLUNA DO BANCO
 													// TIPO DOUBLE
+
+				produto.add(p);
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Erro na consulta: " + e);
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt, rs);
+		}
+
+		return produto;
+	}
+
+	public static List<Produto> listarPorId(int id) throws Exception {
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<Produto> produtos = new ArrayList<>();
+
+		try {
+			stmt = con.prepareStatement(LISTAID);
+			stmt.setInt(1, id);
+			rs = stmt.executeQuery();// CONSULTAR O BANCO, GUARDANDO NA VARIAVEL rs.
+
+			while (rs.next()) { // SE EXISTIR UM PROXIMO VALOR
+
+				Produto p = new Produto();
+				p.setId(rs.getInt("Id"));
+				p.setNomeM(rs.getString("nomeMar"));
+				p.setNomeG(rs.getString("nomeGen"));
+				p.setLab(rs.getString("laboratorio"));
+				p.setQtn(rs.getInt("quantidade"));
+				p.setPreco(rs.getDouble("preco"));
 
 				produtos.add(p);
 			}
@@ -104,4 +135,25 @@ public class CrudProdutos {
 		return produtos;
 	}
 
+	public void update(int qtd, Double preco, int id ) throws Exception {
+		Connection con = ConnectionFactory.getConnection();
+
+		PreparedStatement stmt = null;
+		try {
+				// INSERINDO ATUALIZACAO
+				stmt = con.prepareStatement(UPDATE); // PREPARANDO UPDATE
+				stmt.setInt(1, qtd);// PRIMEIRA VALOR 
+				stmt.setDouble(2, preco); // SEGUNDO VALOR A SER ALTERADO
+				stmt.setInt(3, id); // VALOR DO WHERE 
+
+				stmt.executeUpdate(); // RESPONSAVEL PELA DML... vai gerar o sql
+
+			JOptionPane.showMessageDialog(null, "Sucesso: dados Atualizado ");
+
+		} catch (Exception e) {
+			System.out.println("Erro ao Atualizar o Banco :  " + e);
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
+		}
+	}
 }

@@ -12,7 +12,7 @@ public class TableModelProd extends AbstractTableModel {
 	 */
 	private static final long serialVersionUID = 1L;
 private ArrayList<Produto> listaProdutos = new ArrayList<>();  
-    private String[] colunas = {"ID","NOME MARCA","QUANTIDADE","PRECO"};  
+    private String[] colunas = {"ID","NOME MARCA","NOME GENERICO","LABORATORO","QUANTIDADE","PRECO"};  
       
       
     public TableModelProd() {  

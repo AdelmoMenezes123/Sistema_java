@@ -9,11 +9,17 @@ import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
 
 import Grupo4.ImportaCSV;
 import model.produ.CrudProdutos;
@@ -31,47 +37,61 @@ import javax.swing.SwingConstants;
 import javax.swing.JScrollBar;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
+
+import java.awt.Button;
 import java.awt.Component;
+import java.awt.Color;
+import java.awt.SystemColor;
+import java.awt.TextArea;
+
+import javax.swing.JTextArea;
 
 public class View extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	public static JButton pesquisar_btn;
-	public static JButton importa_btn;
-	public static Label arquivo_Label;
+	public static Button pesquisar_btn = new Button("PESQUISAR");;
+	public static Button importa_btn = new Button("IMPORTAR");
+	public static Button pesq_id = new Button("PESQUISAR");;
+	public static Button btnAtualizar = new Button("ATUALIZAR");;
+	public static Button btnGrafico = new Button("GRAFICO");;
+	public static Button btnExportar = new Button("EXPORTAR");;
+	public static Button btnAddGrafico = new Button("ADD NO GRAFICO");
+	public Button btnVizualiza = new Button("VER LISTA");
 
-	public static JButton pesq_id;
-	public static JButton btnAtualizar;
-	public static JButton btnGrafico;
-	public static JButton btnExportar;
-	public static JButton btnAddGrafico;
-
+	public static ChartPanel painel;
+	public JFreeChart grafico;
+	public static DefaultPieDataset graficoProdutos = new DefaultPieDataset();;
+	public JFrame grafi = new JFrame();
+	public static JTable table_1;
+	private JScrollPane scrollPane;
 	public static JFileChooser fc;
 	public static String caminho;
 	public static FileNameExtensionFilter filtro = new FileNameExtensionFilter(" *.csv", "csv");
-//	Produto p = new Produto();
 
-	public static TextField caixaArquivo;
-	public static TextField caixaPesquisar;
-	public static TextField caixaProduto;
+	public Double prec = 0.0;
+	public int quanti = -1;
+	public int id = 0;
+	public int idADD = 0;
 
-	public static JLabel labelProdutos;
-	public static JLabel labelPreco;
-	public static JLabel labelId ;
-	public static JLabel labelQuantidade;
+	// TEXTFILDS
 	public static TextField caixaQuantidade;
 	public static TextField caixaPreco;
-	public static Label labelIdUpdate;
-	public static JTable table_1 ;
-	private JScrollPane scrollPane;;
-	
-	
+	public static TextField caixaArquivo;
+	public static TextField caixaPesquisar;
+	public TextArea buscaID;
+	// LABELS
+	public static Label labelProdutos = new Label("PRODUTO A SER  EDITADO OU ADICCIONADO NA LISTA");
+	public static Label labelId = new Label("ID");
+	public static Label labelQuantidade = new Label("QUANTIDADE");;
+	public static Label labelIdUpdate = new Label("PRECO");;
+	public static Label arquivo_Label = new Label("Arquivo ");;
 
 	public View() throws Exception {
 
 		criarJanela();// CHAMANDO O METODO CRIAR JANELA
 		criaTabela();
 		// CHAMANDO METODOS DE CRIAR BOTOES
+
 		btnPesqArquivo();
 		btnImporta();
 		btnGrafico();
@@ -94,51 +114,67 @@ public class View extends JFrame {
 		caixaProduto();
 		caixaQuantidade();
 		caixaPreco();
+		caixaListProdutos();
+
+	}
+
+
+	//----------------------------------------->CRIAR GRAFICO
+	public void criarGrafico(DefaultPieDataset graficoProdutos ) {
+		grafico = ChartFactory.createPieChart("Graficos de Remedios",graficoProdutos,true,true, rootPaneCheckingEnabled);
+		painel = new ChartPanel(grafico);
+		grafi.setLocationRelativeTo(null);
+		grafi.setResizable(false);
+//		grafi.setSize(800,800);
+		grafi.getContentPane().add(painel);
 		
 	}
-	
-
-// ---------------------------------------->CRIA TABELA
-	public void criaTabela()  {
-		{ 
-			scrollPane = new JScrollPane(); // BARRA DE ROLAGEM
-			scrollPane.setBounds(0, 336, 694, 236);
+	//----------------------------- EXIBI GRAFICO
+	public void GraficoProdutos() {
+			grafi.setTitle("Grafico dos produtos");
+			grafi.setSize(800,700);
+			grafi.setLocationRelativeTo(null);
+			grafi.setVisible(true);
+			grafi.setResizable(false);
+	}
+	// ---------------------------------------->CRIAR TABELA
+	public void criaTabela() {
+		{
+			scrollPane = new JScrollPane();
+			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			scrollPane.setBounds(0, 425, 794, 236);
 			getContentPane().add(scrollPane);
 			table_1 = new JTable(); // TABELA
 			scrollPane.setViewportView(table_1); // MOSTRA SCROL
-			table_1.setModel(new DefaultTableModel( // SETANDO O VALOR DAS COLUNAS 
-				new Object[][] { // COLUNAS QUE VAI INICIA UM NOVO PRODUTO
-				},
-				new String[] {
-					"ID", "NOME MARCA", "QUANTIDADE", "PRECO" // HEADER
-				}
-			) {
+			table_1.setModel(new DefaultTableModel( // SETANDO O VALOR DAS COLUNAS
+					new Object[][] { // COLUNAS QUE VAI INICIA UM NOVO PRODUTO
+					}, new String[] { "ID", "NOME MARCA", "QUANTIDADE", "PRECO" // HEADER
+					}) {
 				/**
 				 * 
 				 */
 				private static final long serialVersionUID = 1L;
-				boolean[] columnEditables = new boolean[] {
-					false, false, false, false
-				};
+				boolean[] columnEditables = new boolean[] { false, false, false, false };
+
 				public boolean isCellEditable(int row, int column) {
 					return columnEditables[column];
 				}
 			});
-			table_1.getColumnModel().getColumn(0).setPreferredWidth(83);
 			table_1.getColumnModel().getColumn(0).setMaxWidth(1111111);
 			table_1.getColumnModel().getColumn(1).setPreferredWidth(299);
 			table_1.getColumnModel().getColumn(2).setPreferredWidth(120);
 			table_1.getColumnModel().getColumn(3).setPreferredWidth(97);
 		}
 	}
+
 	public void scrol() {
-		
+
 	}
 
 	// -------------------------> CRIA JANELA ----------------------------------
 	public void criarJanela() {
 		setTitle("Sistema Drogaria"); // O nome da janela
-		setSize(700, 600); // Largura e Tamanho da janela
+		setSize(800, 700); // Largura e Tamanho da janela
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // fecha a aplicacao quando aperta para sair da janela.
 		setResizable(false); // nao rederezar a janela JANELA STATICA
 		setLocationRelativeTo(null); // iniciar a janela centralizada
@@ -148,44 +184,42 @@ public class View extends JFrame {
 	// ---------------------------------------------------------------------------------------------
 
 	public void addProTable(Produto pro) { // LER TABELA
-		 
-			DefaultTableModel model = (DefaultTableModel) table_1.getModel();   // CARREGANDO O MODELO... RECEBENDO UMA LISTA     
-	        model.addRow(new Object[] {pro.getId(), pro.getNomeM(), pro.getPreco(), pro.getQtn()});	  //SETANDO OS VALORES P/ CADA LINHA   
-	      //  System.out.println(model.getDataVector());
+
+		DefaultTableModel model = (DefaultTableModel) table_1.getModel(); // CARREGANDO O MODELO... RECEBENDO UMA LISTA
+		model.addRow(new Object[] { pro.getId(), pro.getNomeM(), pro.getQtn(), pro.getPreco() }); // SETANDO OS VALORES
+																									// P/ CADA LINHA
+		// System.out.println(model.getDataVector());
 	}
-		
 
 	public void btnVizu() {
-		JButton btnVizualiza = new JButton("VER LISTA");
+		btnVizualiza.setBackground(SystemColor.activeCaption);
 		btnVizualiza.setFont(new Font("Tahoma", Font.BOLD, 11));
-		// DefaultTableModel model = (DefaultTableModel) table_1.getModel();
-		
 		btnVizualiza.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {		        
-		        try {
-		        	
-		        	
-					for (Produto pro : CrudProdutos.listarProdutos()) { // CARREGANDO LISTA QUE DE PRODUTOS DO BANCO 
-						
-						addProTable(pro); //INSERINDO NA TABELA
+
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+
+					for (Produto pro : CrudProdutos.listarProdutos()) { // CARREGANDO LISTA QUE DE PRODUTOS DO BANCO
+
+						addProTable(pro); // INSERINDO NA TABELA
 					}
-					criaTabela(); //INICIANDO TABELA AO CLICAR NO BOTAO
-					
+					criaTabela(); // INICIANDO TABELA AO CLICAR NO BOTAO
+
 				} catch (Exception e) {
-					System.out.println("erro ao add :"+ e);
-					e.printStackTrace();
+					System.out.println("ERRO ao add :" + e);
+
 				}
-				
+
 			}
 		});
-		btnVizualiza.setBounds(10, 307, 661, 23);
+		btnVizualiza.setBounds(0, 394, 794, 25);
 		getContentPane().add(btnVizualiza);
 	}
 
 	// ---------------------------> BOTAO DE PESQUISAR ARQUIVO
 	public void btnPesqArquivo() {
-		pesquisar_btn = new JButton("PESQUISAR");
+		pesquisar_btn.setBackground(SystemColor.activeCaption);
+
 		pesquisar_btn.addActionListener(new ActionListener() { // CRIANDO ACAO AO CLICAR NO BOTAO (PESQUISAR) ABRE
 																// JANELA DE ARQUIVOS
 			public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -205,7 +239,7 @@ public class View extends JFrame {
 			}
 		});
 		getContentPane().setLayout(null);// CONFIGURACAO DE LAYOUT MANUAL
-		pesquisar_btn.setBounds(493, 50, 118, 32);
+		pesquisar_btn.setBounds(493, 50, 125, 32);
 		getContentPane().add(pesquisar_btn);
 //				getContentPane().setLayout(null);
 
@@ -213,28 +247,28 @@ public class View extends JFrame {
 
 //------------------------------> BOTAO DE IMPORTAR
 	public void btnImporta() {
-		importa_btn = new JButton("IMPORTAR"); 
+		importa_btn.setBackground(SystemColor.activeCaption);
 		importa_btn.addActionListener(new ActionListener() { // ACAO AO CLICAR NO BOTAO
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				try {
 
 					if (caminho != null) { // SE O CAMINHO OBTIDO NO BOTAO DE PESQUISA FOR DIFERENTE DE NULL
 						ImportaCSV.lerArquivoCSV(caminho); // ENVIE O CAMINHO PARA O METODO QUE VAI LE O ARQUIVO
-						Produto p = new Produto() ;//OBJTS QUE VAI RECEBER A LISTA 
+						Produto p = new Produto();// OBJTS QUE VAI RECEBER A LISTA
 						CrudProdutos crud = new CrudProdutos();// OBJ PARA CHAMAR O INSERT
-						crud.crate(p); // INSERT  
+						crud.crate(p); // INSERT
 					} else {
 						JOptionPane.showMessageDialog(null, "Caminho vazio add um arquivo");// JANELA
 					}
 
 				} catch (Exception e1) {
-					System.out.println("Eita deu Erro: " + e1);
+					JOptionPane.showMessageDialog(null, "ERRO"+e1);
 				}
 
 			}
 		});
 
-		importa_btn.setBounds(81, 111, 89, 32);
+		importa_btn.setBounds(113, 111, 89, 32);
 		importa_btn.setVisible(true);
 		getContentPane().add(importa_btn);
 		getContentPane().setLayout(null);
@@ -242,36 +276,124 @@ public class View extends JFrame {
 
 //--------------------------------> BOTAO DO GRAFICO
 	public void btnGrafico() {
-		btnGrafico = new JButton("GRAFICO");
-		btnGrafico.setBounds(279, 111, 89, 32);// HORIZONTAL, VERTICAL, LARGUTA ALTURA
+		btnGrafico.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				GraficoProdutos();
+				//criarGrafico();		
+			}
+		});
+		btnGrafico.setBackground(SystemColor.activeCaption);
+		btnGrafico.setBounds(342, 111, 89, 32);// HORIZONTAL, VERTICAL, LARGUTA ALTURA
 		getContentPane().add(btnGrafico); // ADD NA JANELA
 	}
 
-//---------------------------------------------->BOTAO DE ADD GRAFICO
+//---------------------------------------------->BOTAO DE ADD NO GRAFICO
 	public void btnAddGrafico() {
-		btnAddGrafico = new JButton("ADD NO GRAFICO");
-		btnAddGrafico.setBounds(104, 202, 148, 32);
+		btnAddGrafico.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if ( idADD >0) {
+									
+					try {
+						for (Produto pro : CrudProdutos.listarPorId(idADD)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
+							
+							
+							
+							pro.setPreco(pro.getPreco()) ;
+							pro.setQtn(pro.getQtn()) ;
+							
+							graficoProdutos.setValue("Nome: "+pro.getNomeG(), pro.getQtn());
+							criarGrafico( graficoProdutos );
+							
+							
+														
+							
+							JOptionPane.showMessageDialog(null,
+						    "Adicionado no Grafico,\nRemedio: "+pro.getNomeM()+"\nQuantidade: "+pro.getQtn()+"\nPreco: "+pro.getPreco());
+							
+							caixaPesquisar.setText(""); // ZORO A CAIXA DE PESQUISA
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				} 
+				idADD = 0;
+			}
+		});
+		btnAddGrafico.setBackground(SystemColor.activeCaption);
+		btnAddGrafico.setBounds(470, 111, 148, 32);
 		getContentPane().add(btnAddGrafico);
 	}
 
 //-----------------------------------> BOTAO DE PESQUISAR ID
 	public void btnPesquisar() {
-		pesq_id = new JButton("PESQUISAR");
-		pesq_id.setBounds(528, 174, 89, 32);
+
+		pesq_id.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+
+					id = Integer.parseInt(caixaPesquisar.getText());// CONVERTENDO PARA INT
+					idADD =id;
+					
+					for (Produto pro : CrudProdutos.listarPorId(id)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
+
+						buscaID.setText("ID: (" + pro.getId() + ") " + "\nNOME MARCA: (" + pro.getNomeM()
+								+ ")\nNOME GENERICO: (" + pro.getNomeG() + ")\nLABORATORIO: (" + pro.getLab()
+								+ ")\nQUANTIDADE: (" + pro.getQtn() + ")\nPRECO: (" + pro.getPreco() + ")");
+						quanti = pro.getQtn();// VALOR VAI SER ULTIL QUANDO FOR ATUALIZAR
+						prec = pro.getPreco();// GUARDANDO VALOR
+					}
+
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Sr(a), Porfavor insira o ID correto!");
+				}
+
+			}
+		});
+		pesq_id.setBackground(SystemColor.activeCaption);
+		pesq_id.setBounds(654, 225, 108, 32);
 		getContentPane().add(pesq_id);
 	}
 
 //---------------------------------------> BOTAO DE ATUALIZAR PRODUTO
 	public void btnAtualizar() {
-		btnAtualizar = new JButton("ATUALIZAR");
-		btnAtualizar.setBounds(533, 248, 103, 32);
+		btnAtualizar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				CrudProdutos crud = new CrudProdutos();
+				try {
+					id = Integer.parseInt(caixaPesquisar.getText());
+					if (id > 0) { // CASO O USUARIO NAO TENHA DIGITADO O ID
+						int qtd = Integer.parseInt(caixaQuantidade.getText());// VALOR DIGITADO NO CAMPO QUANTIDADE
+						double preco = Double.parseDouble(caixaPreco.getText());// VALOR DIGITADO NO CAMPO PRECO
+						if (( ((quanti >= 0 && quanti <=10)&& qtd > 0) || (quanti > 10 && qtd >= -1))// a quantidade nao pode ser menor que -1
+								&& (((prec >= 5 && prec <= 50) && (preco >= 5 && preco <= 100))
+										|| ((prec >= 49 && prec <= 380) && (preco >= 50 && preco <= 380)))) { 
+							int qtdSomado = qtd + quanti;
+							crud.update(qtdSomado, preco, id); // ATUALIZE BANCO!
+							JOptionPane.showMessageDialog(null, "Atualizado com sucesso !!!");
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Adicione valores correto !!!");
+					}
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Pesquise o id primeiro e depois\n insira os dados correto!!");
+				}
+				caixaPesquisar.setText("");
+				caixaQuantidade.setText("");
+				caixaPreco.setText("");
+				buscaID.setText("");
+			}
+		});
+		btnAtualizar.setBackground(SystemColor.activeCaption);
+		btnAtualizar.setBounds(670, 338, 103, 32);
 		getContentPane().add(btnAtualizar);
 	}
 
 //-------------------------------------------> BOTAO DE EXPORTAR ARQUIVO SCV
 	public void btnExportar() {
-		btnExportar = new JButton("EXPORTAR");
-		btnExportar.setBounds(180, 111, 89, 32);
+		btnExportar.setBackground(SystemColor.activeCaption);
+		btnExportar.setBounds(233, 111, 89, 32);
 		getContentPane().add(btnExportar);
 	}
 //-------------------------------------------------------------------------------------------
@@ -281,7 +403,6 @@ public class View extends JFrame {
 //-------------------------------------------> LABEL ARQUIVO
 	public void labelArquivo() {
 		// -------> ARQIVO
-		arquivo_Label = new Label("Arquivo ");
 		arquivo_Label.setFont(new Font("Arial", Font.BOLD, 15));
 		arquivo_Label.setBounds(10, 50, 69, 25);
 		arquivo_Label.setVisible(true); // DEIXA VISIVEL O OBJETO
@@ -290,43 +411,31 @@ public class View extends JFrame {
 
 	// -------------------------------------------> LABEL PRODUTO
 	public void labelPesqProdutos() {
-		labelProdutos = new JLabel("Produto");
-		labelProdutos.setHorizontalAlignment(SwingConstants.LEFT);
 		labelProdutos.setFont(new Font("Arial Black", Font.BOLD, 13));
-		labelProdutos.setBounds(24, 174, 76, 32);
+		labelProdutos.setBounds(10, 190, 393, 32);
 		getContentPane().add(labelProdutos);
 	}
 
 	// -------------------------------------------> LABEL QUANTIDADE
 	public void labelQuantidade() {
-		labelQuantidade = new JLabel("QUANTIDADE");
-		labelQuantidade.setFont(new Font("Arial", Font.BOLD, 13));
-		labelQuantidade.setBounds(331, 233, 86, 14);
-		getContentPane().add(labelQuantidade);
-	}
 
-	// -------------------------------------------> LABEL PRECO
-	public void labelPreco() {
-		labelPreco = new JLabel("PRECO");
-		labelPreco.setBounds(441, 237, 46, 14);
-		getContentPane().add(labelPreco);
+		labelQuantidade.setFont(new Font("Arial", Font.BOLD, 13));
+		labelQuantidade.setBounds(453, 318, 86, 14);
+		getContentPane().add(labelQuantidade);
 	}
 
 	// -------------------------------------------> LABEL ID
 	public void labelId() {
-		labelId = new JLabel("ID");
-		labelId.setHorizontalAlignment(SwingConstants.LEFT);
 		labelId.setFont(new Font("Arial", Font.BOLD, 13));
-		labelId.setBounds(441, 154, 46, 14);
+		labelId.setBounds(571, 205, 46, 14);
 		labelId.setVisible(true);
 		getContentPane().add(labelId);
 	}
 
 	// ---------------------------------------> LABEL PRECO
 	public void labelUpdate() {
-		labelIdUpdate = new Label("PRECO");
 		labelIdUpdate.setFont(new Font("Arial", Font.BOLD, 13));
-		labelIdUpdate.setBounds(441, 233, 64, 14);
+		labelIdUpdate.setBounds(580, 318, 86, 14);
 		getContentPane().add(labelIdUpdate);
 	}
 
@@ -338,6 +447,7 @@ public class View extends JFrame {
 	// -----------------------------------> CAIXA DE ARQUIVOS
 	public void caixaArquivo() {
 		caixaArquivo = new TextField();
+		caixaArquivo.setText("Pesquise o caminho do arquivo");
 		caixaArquivo.setBounds(80, 50, 407, 32); // horizontal, vertical, largura e altura
 		caixaArquivo.setColumns(10);
 		caixaArquivo.setVisible(true);
@@ -347,23 +457,19 @@ public class View extends JFrame {
 	// -----------------------------------> CAIXA DE PESQUISA ID
 	public void caixaPesquisar() {
 		caixaPesquisar = new TextField();
-		caixaPesquisar.setBounds(441, 174, 77, 30);
+		caixaPesquisar.setBounds(571, 225, 77, 30);
 		getContentPane().add(caixaPesquisar);
 		caixaPesquisar.setColumns(10);
 	}
 
 	// -----------------------------------> CAIXA DE PRODUTOS
 	public void caixaProduto() {
-		caixaProduto = new TextField();
-		caixaProduto.setBounds(104, 174, 292, 29);
-		getContentPane().add(caixaProduto);
-		caixaProduto.setColumns(10);
 	}
 
 	// -------------------------------------> CAIXA QUANTIDADE
 	public void caixaQuantidade() {
 		caixaQuantidade = new TextField();
-		caixaQuantidade.setBounds(331, 252, 86, 28);
+		caixaQuantidade.setBounds(453, 338, 86, 28);
 		getContentPane().add(caixaQuantidade);
 		caixaQuantidade.setColumns(10);
 	}
@@ -371,10 +477,18 @@ public class View extends JFrame {
 	/// -------------------------- CAIXA PRECO
 	public void caixaPreco() {
 		caixaPreco = new TextField();
-		caixaPreco.setBounds(441, 252, 86, 28);
+		caixaPreco.setBounds(563, 338, 86, 28);
 		getContentPane().add(caixaPreco);
 		caixaPreco.setColumns(10);
 
 	}
-}
 
+	// ----------------------------- CAIXA DE LISTAGEM
+
+	public void caixaListProdutos() {
+
+		buscaID = new TextArea();
+		buscaID.setBounds(10, 225, 401, 158);
+		getContentPane().add(buscaID);
+	}
+}

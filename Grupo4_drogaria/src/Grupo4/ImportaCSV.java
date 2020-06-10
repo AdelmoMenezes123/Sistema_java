@@ -34,7 +34,6 @@ public class ImportaCSV {
 			 
 			 
 			reader.readLine();// CABECALHO DO ARQUIVO ID, NOME(MARCA) .....
-//            System.out.println("--------------------------");
 			 String linha ;
 			 produtos = new ArrayList<>(); // INICIANDO A LISTA
 	        while ((linha = reader.readLine()) != null) { // ENQUANTO TIVER LINHA PULE PARA PROXIMA 
@@ -44,13 +43,6 @@ public class ImportaCSV {
 			String x = dados[5].replace( "$" , "" ); // SE CASO TIVER $ TROQUE POR CARACTER VAZIO ...
 													// TAVA DANDO ERRO AO TENTAR CONVERTER PARA DOUBLE
 			   
-//			    System.out.println("ID " + dados[0]); ARQUI SAO OS PRODUTOS SEPARADO POR COLUNAS 
-//	            System.out.println("NOMEM: " + dados[1]);
-//	            System.out.println("NOMEG: " + dados[2]);
-//	            System.out.println("LAB: " + dados[3]);
-//	            System.out.println("QUANTI: " + dados[4]);
-//	            System.out.println("PRECO: " + dados[5]);
-//	            System.out.println("--------------------------");
 			     
 			     p = new Produto(); //INICIANDO UM NOVO OBJ DO TIPO Produto
 	             p.setId(Integer.parseInt(dados[0]));// CONVERTENDO STRING ID PARA INT E COLOCANDO NA VARIAVEL ATRAVEL DO SETID()

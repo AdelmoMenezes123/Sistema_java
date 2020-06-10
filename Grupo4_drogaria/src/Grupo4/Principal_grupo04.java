@@ -11,6 +11,7 @@ public class Principal_grupo04 {
 		
 		new View();
 		
+		
 //		for ( Produto p : CrudProdutos.listarProdutos()) {
 //			//Produto p  = new Produto();
 //			
