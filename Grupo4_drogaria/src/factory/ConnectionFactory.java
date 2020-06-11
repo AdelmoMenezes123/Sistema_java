@@ -1,4 +1,4 @@
-package connectio;
+package factory;
 
 
 import java.sql.Connection;

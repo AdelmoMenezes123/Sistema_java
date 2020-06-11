@@ -5,46 +5,31 @@ import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Iterator;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
-import Grupo4.ImportaCSV;
-import model.produ.CrudProdutos;
 import model.produ.Produto;
-import model.produ.TableModelProd;
+import produ.DAO.CrudProdutos;
+import produ.DAO.ManipulaCSV;
 
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.RowSorter;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionEvent;
-import javax.swing.SwingConstants;
-import javax.swing.JScrollBar;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
 
 import java.awt.Button;
-import java.awt.Component;
-import java.awt.Color;
 import java.awt.SystemColor;
 import java.awt.TextArea;
 
-import javax.swing.JTextArea;
 
 public class View extends JFrame {
 
@@ -53,9 +38,9 @@ public class View extends JFrame {
 	public static Button importa_btn = new Button("IMPORTAR");
 	public static Button pesq_id = new Button("PESQUISAR");;
 	public static Button btnAtualizar = new Button("ATUALIZAR");;
-	public static Button btnGrafico = new Button("GRAFICO");;
+	public static Button btnGrafico = new Button("GRÁFICO");;
 	public static Button btnExportar = new Button("EXPORTAR");;
-	public static Button btnAddGrafico = new Button("ADD NO GRAFICO");
+	public static Button btnAddGrafico = new Button("ADD NO GRÁFICO");
 	public Button btnVizualiza = new Button("VER LISTA");
 
 	public static ChartPanel painel;
@@ -80,11 +65,12 @@ public class View extends JFrame {
 	public static TextField caixaPesquisar;
 	public TextArea buscaID;
 	// LABELS
-	public static Label labelProdutos = new Label("PRODUTO A SER  EDITADO OU ADICCIONADO NA LISTA");
+	public static Label labelProdutos = new Label("PRODUTO A SER  EDITADO OU ADICIONADO NA LISTA");
 	public static Label labelId = new Label("ID");
 	public static Label labelQuantidade = new Label("QUANTIDADE");;
-	public static Label labelIdUpdate = new Label("PRECO");;
-	public static Label arquivo_Label = new Label("Arquivo ");;
+	public static Label labelIdUpdate = new Label("PREÇO");;
+	public static Label arquivo_Label = new Label("Arquivo ");
+	private TextField novoFile;
 
 	public View() throws Exception {
 
@@ -115,13 +101,14 @@ public class View extends JFrame {
 		caixaQuantidade();
 		caixaPreco();
 		caixaListProdutos();
-
+		caixaCriaCaminho();
+		
 	}
 
 
 	//----------------------------------------->CRIAR GRAFICO
 	public void criarGrafico(DefaultPieDataset graficoProdutos ) {
-		grafico = ChartFactory.createPieChart("Graficos de Remedios",graficoProdutos,true,true, rootPaneCheckingEnabled);
+		grafico = ChartFactory.createPieChart("GRÁFICO DE MEDICAMENTOS",graficoProdutos,true,true, false);
 		painel = new ChartPanel(grafico);
 		grafi.setLocationRelativeTo(null);
 		grafi.setResizable(false);
@@ -148,8 +135,7 @@ public class View extends JFrame {
 			scrollPane.setViewportView(table_1); // MOSTRA SCROL
 			table_1.setModel(new DefaultTableModel( // SETANDO O VALOR DAS COLUNAS
 					new Object[][] { // COLUNAS QUE VAI INICIA UM NOVO PRODUTO
-					}, new String[] { "ID", "NOME MARCA", "QUANTIDADE", "PRECO" // HEADER
-					}) {
+					}, new String[] { "ID", "NOME MARCA", "QUANTIDADE", "PREÇO" }) {// HEADER
 				/**
 				 * 
 				 */
@@ -199,7 +185,8 @@ public class View extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 
-					for (Produto pro : CrudProdutos.listarProdutos()) { // CARREGANDO LISTA QUE DE PRODUTOS DO BANCO
+					CrudProdutos crud = new CrudProdutos();
+					for (Produto pro : crud.listarProdutos()) { // CARREGANDO LISTA QUE DE PRODUTOS DO BANCO
 
 						addProTable(pro); // INSERINDO NA TABELA
 					}
@@ -226,7 +213,7 @@ public class View extends JFrame {
 				fc = new JFileChooser("C:\\Users\\usuario\\Desktop\\"); // JA COMECA NO DIRETORIO DESKTOP QUANDO FOR
 																		// PESQUISAR O ARQUIVO
 				fc.setFileFilter(filtro); // FILTRAR OS ARQUIVOS POR CSV TA DECLARADO PERTO DOS IMPORTS
-				fc.setFileSelectionMode(JFileChooser.FILES_ONLY); // ADD APENAS ARQUIVO
+				fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES); // ADD APENAS ARQUIVO
 				fc.showOpenDialog(fc); /// CAIXA DE DIALOGO ONDE VOU ESCOLHER O DIRETORIO DO ARQUIVO
 				fc.setDialogTitle("Procurar arquivo"); // TITULO DA CAIXA
 				fc.setBounds(493, 50, 400, 300);
@@ -239,7 +226,7 @@ public class View extends JFrame {
 			}
 		});
 		getContentPane().setLayout(null);// CONFIGURACAO DE LAYOUT MANUAL
-		pesquisar_btn.setBounds(493, 50, 125, 32);
+		pesquisar_btn.setBounds(637, 43, 125, 32);
 		getContentPane().add(pesquisar_btn);
 //				getContentPane().setLayout(null);
 
@@ -253,7 +240,7 @@ public class View extends JFrame {
 				try {
 
 					if (caminho != null) { // SE O CAMINHO OBTIDO NO BOTAO DE PESQUISA FOR DIFERENTE DE NULL
-						ImportaCSV.lerArquivoCSV(caminho); // ENVIE O CAMINHO PARA O METODO QUE VAI LE O ARQUIVO
+						ManipulaCSV.lerArquivoCSV(caminho); // ENVIE O CAMINHO PARA O METODO QUE VAI LE O ARQUIVO
 						Produto p = new Produto();// OBJTS QUE VAI RECEBER A LISTA
 						CrudProdutos crud = new CrudProdutos();// OBJ PARA CHAMAR O INSERT
 						crud.crate(p); // INSERT
@@ -268,7 +255,7 @@ public class View extends JFrame {
 			}
 		});
 
-		importa_btn.setBounds(113, 111, 89, 32);
+		importa_btn.setBounds(397, 111, 89, 32);
 		importa_btn.setVisible(true);
 		getContentPane().add(importa_btn);
 		getContentPane().setLayout(null);
@@ -283,7 +270,7 @@ public class View extends JFrame {
 			}
 		});
 		btnGrafico.setBackground(SystemColor.activeCaption);
-		btnGrafico.setBounds(342, 111, 89, 32);// HORIZONTAL, VERTICAL, LARGUTA ALTURA
+		btnGrafico.setBounds(519, 111, 89, 32);// HORIZONTAL, VERTICAL, LARGUTA ALTURA
 		getContentPane().add(btnGrafico); // ADD NA JANELA
 	}
 
@@ -294,24 +281,20 @@ public class View extends JFrame {
 				if ( idADD >0) {
 									
 					try {
-						for (Produto pro : CrudProdutos.listarPorId(idADD)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
+//						for (Produto pro : CrudProdutos.listarPorId(idADD)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
+						CrudProdutos crud = new CrudProdutos(); 
+						Produto pro = crud.listarPorId(idADD);
 							
-							
-							
-							pro.setPreco(pro.getPreco()) ;
 							pro.setQtn(pro.getQtn()) ;
 							
-							graficoProdutos.setValue("Nome: "+pro.getNomeG(), pro.getQtn());
+							graficoProdutos.setValue("NOME: "+pro.getNomeG(), pro.getQtn());
 							criarGrafico( graficoProdutos );
-							
-							
-														
-							
+								
 							JOptionPane.showMessageDialog(null,
-						    "Adicionado no Grafico,\nRemedio: "+pro.getNomeM()+"\nQuantidade: "+pro.getQtn()+"\nPreco: "+pro.getPreco());
+						    "Adicionado no Grafico,\nMedicamento: "+pro.getNomeM()+"\nQuantidade: "+pro.getQtn());
 							
 							caixaPesquisar.setText(""); // ZORO A CAIXA DE PESQUISA
-						}
+//						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -322,7 +305,7 @@ public class View extends JFrame {
 			}
 		});
 		btnAddGrafico.setBackground(SystemColor.activeCaption);
-		btnAddGrafico.setBounds(470, 111, 148, 32);
+		btnAddGrafico.setBounds(614, 111, 148, 32);
 		getContentPane().add(btnAddGrafico);
 	}
 
@@ -336,14 +319,16 @@ public class View extends JFrame {
 					id = Integer.parseInt(caixaPesquisar.getText());// CONVERTENDO PARA INT
 					idADD =id;
 					
-					for (Produto pro : CrudProdutos.listarPorId(id)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
+//					for (Produto pro : CrudProdutos.listarPorId(id)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
 
+						CrudProdutos crud = new CrudProdutos();
+						Produto pro =  crud.listarPorId(id);
 						buscaID.setText("ID: (" + pro.getId() + ") " + "\nNOME MARCA: (" + pro.getNomeM()
 								+ ")\nNOME GENERICO: (" + pro.getNomeG() + ")\nLABORATORIO: (" + pro.getLab()
-								+ ")\nQUANTIDADE: (" + pro.getQtn() + ")\nPRECO: (" + pro.getPreco() + ")");
+								+ ")\nQUANTIDADE: (" + pro.getQtn() + ")\nPREÇO: (" + pro.getPreco() + ")");
 						quanti = pro.getQtn();// VALOR VAI SER ULTIL QUANDO FOR ATUALIZAR
 						prec = pro.getPreco();// GUARDANDO VALOR
-					}
+//					}
 
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Sr(a), Porfavor insira o ID correto!");
@@ -392,8 +377,24 @@ public class View extends JFrame {
 
 //-------------------------------------------> BOTAO DE EXPORTAR ARQUIVO SCV
 	public void btnExportar() {
+		btnExportar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					if( caminho != null && novoFile.getText() != null && novoFile.getText() != "") {
+						ManipulaCSV.escreverArquivoCSV(caminho,novoFile.getText()+".csv");
+						caminho = "";
+						caixaPesquisar.setText(""); // ZeRO A CAIXA DE PESQUISA
+						novoFile.setText("");
+					}else {
+						JOptionPane.showMessageDialog(null,"Selecione a pasta que o arquivo vai ser gravado\ne Escreva o nome do novo Arquivo");	
+					}
+				} catch (Exception e) {
+					System.out.println(e);		
+				}
+			}
+		});
 		btnExportar.setBackground(SystemColor.activeCaption);
-		btnExportar.setBounds(233, 111, 89, 32);
+		btnExportar.setBounds(286, 111, 89, 32);
 		getContentPane().add(btnExportar);
 	}
 //-------------------------------------------------------------------------------------------
@@ -404,7 +405,7 @@ public class View extends JFrame {
 	public void labelArquivo() {
 		// -------> ARQIVO
 		arquivo_Label.setFont(new Font("Arial", Font.BOLD, 15));
-		arquivo_Label.setBounds(10, 50, 69, 25);
+		arquivo_Label.setBounds(129, 43, 69, 25);
 		arquivo_Label.setVisible(true); // DEIXA VISIVEL O OBJETO
 		getContentPane().add(arquivo_Label);
 	}
@@ -448,7 +449,7 @@ public class View extends JFrame {
 	public void caixaArquivo() {
 		caixaArquivo = new TextField();
 		caixaArquivo.setText("Pesquise o caminho do arquivo");
-		caixaArquivo.setBounds(80, 50, 407, 32); // horizontal, vertical, largura e altura
+		caixaArquivo.setBounds(211, 43, 407, 32); // horizontal, vertical, largura e altura
 		caixaArquivo.setColumns(10);
 		caixaArquivo.setVisible(true);
 		getContentPane().add(caixaArquivo);
@@ -486,9 +487,20 @@ public class View extends JFrame {
 	// ----------------------------- CAIXA DE LISTAGEM
 
 	public void caixaListProdutos() {
-
 		buscaID = new TextArea();
 		buscaID.setBounds(10, 225, 401, 158);
 		getContentPane().add(buscaID);
+	}
+	
+	public void caixaCriaCaminho() {
+		novoFile = new TextField(); // TEXTFILD PARA CRIAR CAMINHO
+		novoFile.setBounds(10, 111, 247, 32);
+		getContentPane().add(novoFile);
+		novoFile.setColumns(10);
+		
+		Label file = new Label("ESCREVA AQUI O NOME DO NOVO ARQUIVO"); // LABEL DO TEXTFILD
+		file.setFont(new Font("Arial", Font.BOLD, 11));
+		file.setBounds(10, 86, 247, 25);
+		getContentPane().add(file);
 	}
 }
