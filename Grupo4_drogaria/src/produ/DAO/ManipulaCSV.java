@@ -62,7 +62,7 @@ public class ManipulaCSV {
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null, "Arquivo nao encontrado:  \n" + e);
 		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println("indexOutOfBounds: \n" + e.getMessage());
+			System.out.println("indexOutOfBounds:err \n" + e.getMessage());
 		} finally { // SE TUDO OK OU NAO EXECULTE
 			if (reader != null) { // BUFFER TA COM ARQUIVOS ABERTO AINDA?
 				reader.close(); // FECHE O ARQUIVO

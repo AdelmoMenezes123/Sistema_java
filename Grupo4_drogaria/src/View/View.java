@@ -47,7 +47,7 @@ public class View extends JFrame {
 	public JFreeChart grafico;
 	public static DefaultPieDataset graficoProdutos = new DefaultPieDataset();;
 	public JFrame grafi = new JFrame();
-	public static JTable table_1;
+	public  JTable table_1 = new JTable();;
 	private JScrollPane scrollPane;
 	public static JFileChooser fc;
 	public static String caminho;
@@ -244,6 +244,8 @@ public class View extends JFrame {
 						Produto p = new Produto();// OBJTS QUE VAI RECEBER A LISTA
 						CrudProdutos crud = new CrudProdutos();// OBJ PARA CHAMAR O INSERT
 						crud.crate(p); // INSERT
+						caixaArquivo.setText("");
+						caminho = "";
 					} else {
 						JOptionPane.showMessageDialog(null, "Caminho vazio add um arquivo");// JANELA
 					}
@@ -254,6 +256,9 @@ public class View extends JFrame {
 
 			}
 		});
+		
+		
+		
 
 		importa_btn.setBounds(397, 111, 89, 32);
 		importa_btn.setVisible(true);
@@ -281,8 +286,10 @@ public class View extends JFrame {
 				if ( idADD >0) {
 									
 					try {
-//						for (Produto pro : CrudProdutos.listarPorId(idADD)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
-						CrudProdutos crud = new CrudProdutos(); 
+						CrudProdutos crud = new CrudProdutos();
+						
+						//for (Produto pro : crud.listarPorId(idADD)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
+						//CrudProdutos crud = new CrudProdutos(); 
 						Produto pro = crud.listarPorId(idADD);
 							
 							pro.setQtn(pro.getQtn()) ;
@@ -294,7 +301,7 @@ public class View extends JFrame {
 						    "Adicionado no Grafico,\nMedicamento: "+pro.getNomeM()+"\nQuantidade: "+pro.getQtn());
 							
 							caixaPesquisar.setText(""); // ZORO A CAIXA DE PESQUISA
-//						}
+						//}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -319,16 +326,17 @@ public class View extends JFrame {
 					id = Integer.parseInt(caixaPesquisar.getText());// CONVERTENDO PARA INT
 					idADD =id;
 					
-//					for (Produto pro : CrudProdutos.listarPorId(id)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
+					CrudProdutos crud = new CrudProdutos();
+					//for (Produto pro : crud.listarPorId(id)) { // CARREGANDO LISTA DE PRODUTOS DO BANCO
 
-						CrudProdutos crud = new CrudProdutos();
+						//CrudProdutos crud = new CrudProdutos();
 						Produto pro =  crud.listarPorId(id);
 						buscaID.setText("ID: (" + pro.getId() + ") " + "\nNOME MARCA: (" + pro.getNomeM()
 								+ ")\nNOME GENERICO: (" + pro.getNomeG() + ")\nLABORATORIO: (" + pro.getLab()
 								+ ")\nQUANTIDADE: (" + pro.getQtn() + ")\nPREÇO: (" + pro.getPreco() + ")");
 						quanti = pro.getQtn();// VALOR VAI SER ULTIL QUANDO FOR ATUALIZAR
 						prec = pro.getPreco();// GUARDANDO VALOR
-//					}
+				    //}
 
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Sr(a), Porfavor insira o ID correto!");
@@ -389,7 +397,7 @@ public class View extends JFrame {
 						JOptionPane.showMessageDialog(null,"Selecione a pasta que o arquivo vai ser gravado\ne Escreva o nome do novo Arquivo");	
 					}
 				} catch (Exception e) {
-					System.out.println(e);		
+					System.out.println("ERRO: "+e.getMessage());		
 				}
 			}
 		});
